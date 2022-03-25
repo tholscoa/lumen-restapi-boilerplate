@@ -19,5 +19,9 @@ $router->get('/test', function () {
 
 
 $router->post('register', [
-    'as' => 'register', 'uses' => 'UserController@register'
+    'as' => 'register', 'uses' => 'Auth\RegistrationController@register'
+]);
+
+$router->post('check', [
+    'as' => 'register', 'uses' => 'Auth\AuthController@register'
 ]);

@@ -1,21 +1,18 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 use Validator;
 
-class UserController extends Controller
+class RegistrationController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:api');
-    }
-
-    public function getUser(Request $request)
+    public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
@@ -31,13 +28,18 @@ class UserController extends Controller
         $input['password'] = Hash::make($input['password']);
         try {
             $user = User::create($input);
+        } catch (\Exception $e) {
+            Log::error("Error occur while creating this account " . $request->input('email') . json_encode($e));
+            return response()->json(['data' => null, 'message' => 'Error occured while creating account', 'status' => false], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        try {
             /**Generate user accessToken **/
             $data['token'] =  $user->createToken('MyApp')->accessToken;
             $data['name'] =  $user->name;
             return response()->json(['data' => $data, 'message' => 'Account created successfully!', 'status' => true], Response::HTTP_OK);
         } catch (\Exception $e) {
-            error_log($e);
-            return response()->json(['data' => null, 'message' => 'Error occured while creating account', 'status' => false], Response::HTTP_INTERNAL_SERVER_ERROR);
+            Log::error("Error occur while generating token for created account " . $request->input('email') . json_encode($e));
+            return response()->json(['data' => null, 'message' => 'Error occured while while generating token for created account', 'status' => false], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

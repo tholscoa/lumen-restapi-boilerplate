@@ -124,6 +124,6 @@ $app->router->group([
     require __DIR__ . '/../routes/v1/api.php';
 });
 
-\Samfrm\LumenPassport\LumenPassport::routes($app->router, ['prefix' => 'v1/oauth']);
+\Samfrm\LumenPassport\LumenPassport::routes($app->router, ['prefix' => 'api/v1/oauth']);
 
 return $app;

@@ -60,6 +60,7 @@ $app->singleton(
 
 $app->configure('app');
 
+$app->configure('auth');
 /*
 |--------------------------------------------------------------------------
 | Register Middleware
@@ -97,6 +98,8 @@ $app->routeMiddleware([
 // Finally register two service providers - original one and Lumen adapter
 $app->register(Laravel\Passport\PassportServiceProvider::class);
 $app->register(Samfrm\LumenPassport\PassportServiceProvider::class);
+$app->register(Flipbox\LumenGenerator\LumenGeneratorServiceProvider::class);
+
 
 /*
 |--------------------------------------------------------------------------
@@ -114,5 +117,13 @@ $app->router->group([
 ], function ($router) {
     require __DIR__ . '/../routes/web.php';
 });
+
+$app->router->group([
+    'namespace' => 'App\Http\Controllers', 'prefix' => 'api/v1/'
+], function ($router) {
+    require __DIR__ . '/../routes/v1/api.php';
+});
+
+\Samfrm\LumenPassport\LumenPassport::routes($app->router, ['prefix' => 'api/v1/oauth']);
 
 return $app;

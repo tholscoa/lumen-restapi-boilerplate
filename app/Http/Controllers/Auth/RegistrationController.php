@@ -10,6 +10,12 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use Validator;
 
+/**
+     * User register.
+     *
+     * This endpoint allows you to create an account. 
+     * <aside class="notice">Create and account; </aside>
+     */
 class RegistrationController extends Controller
 {
     public function register(Request $request)

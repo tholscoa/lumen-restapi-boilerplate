@@ -61,6 +61,9 @@ $app->singleton(
 $app->configure('app');
 
 $app->configure('auth');
+
+$app->configure('scribe');
+
 /*
 |--------------------------------------------------------------------------
 | Register Middleware
@@ -99,7 +102,7 @@ $app->routeMiddleware([
 $app->register(Laravel\Passport\PassportServiceProvider::class);
 $app->register(Samfrm\LumenPassport\PassportServiceProvider::class);
 $app->register(Flipbox\LumenGenerator\LumenGeneratorServiceProvider::class);
-
+$app->register(\Knuckles\Scribe\ScribeServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------

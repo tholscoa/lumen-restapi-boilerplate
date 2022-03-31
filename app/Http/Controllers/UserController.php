@@ -10,9 +10,12 @@ use Validator;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
 
-
-    public function register(Request $request)
+    public function getUser(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
@@ -26,13 +29,13 @@ class UserController extends Controller
 
         $input = $request->all();
         $input['password'] = Hash::make($input['password']);
-        try{
+        try {
             $user = User::create($input);
             /**Generate user accessToken **/
             $data['token'] =  $user->createToken('MyApp')->accessToken;
             $data['name'] =  $user->name;
             return response()->json(['data' => $data, 'message' => 'Account created successfully!', 'status' => true], Response::HTTP_OK);
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             error_log($e);
             return response()->json(['data' => null, 'message' => 'Error occured while creating account', 'status' => false], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

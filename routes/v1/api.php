@@ -13,15 +13,19 @@
 |
 */
 
-$router->get('/test', function () {
-    return "test succeful";
-});
+// $router->get('/test', function () {
+//     return "test succeful";
+// });
 
 
 $router->post('register', [
     'as' => 'register', 'uses' => 'Auth\RegistrationController@register'
 ]);
 
-$router->post('check', [
-    'as' => 'register', 'uses' => 'Auth\AuthController@register'
+$router->post('verify_token', [
+    'as' => 'verify_token', 'uses' => 'Auth\RegistrationController@verifyToken'
+]);
+
+$router->get('myprofile', [
+    'as' => 'myprofile', 'uses' => 'UserController@getMyProfile'
 ]);

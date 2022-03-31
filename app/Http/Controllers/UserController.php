@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Validator;
 
 class UserController extends Controller
@@ -38,6 +39,16 @@ class UserController extends Controller
         } catch (\Exception $e) {
             error_log($e);
             return response()->json(['data' => null, 'message' => 'Error occured while creating account', 'status' => false], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function getMyProfile()
+    {
+        $me = Auth::user();
+        if (!empty($me)) {
+            return response()->json(['data' => $me, 'message' => 'profile details fetched', 'status' => true], Response::HTTP_OK);
+        } else {
+            return response()->json(['data' => null, 'message' => 'User profile cannot be fetched', 'status' => false], Response::HTTP_FORBIDDEN);
         }
     }
 }

@@ -7,15 +7,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Validator;
 
 /**
-     * User register.
-     *
-     * This endpoint allows you to create an account. 
-     * <aside class="notice">Create and account; </aside>
-     */
+ * User register.
+ *
+ * This endpoint allows you to create an account. 
+ * <aside class="notice">Create and account; </aside>
+ */
 class RegistrationController extends Controller
 {
     public function register(Request $request)
@@ -32,12 +33,19 @@ class RegistrationController extends Controller
 
         $input = $request->all();
         $input['password'] = Hash::make($input['password']);
+        $exist = User::whereEmail($input['email'])->first();
+        // return $exist;
         try {
-            $user = User::create($input);
+            if (empty($exist)) {
+                $user = User::create($input);
+            } else {
+                return response()->json(['data' => null, 'message' => 'Error occured while creating account. Email already registered', 'status' => false], Response::HTTP_BAD_REQUEST);
+            }
         } catch (\Exception $e) {
             Log::error("Error occur while creating this account " . $request->input('email') . json_encode($e));
-            return response()->json(['data' => null, 'message' => 'Error occured while creating account', 'status' => false], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json(['data' => null, 'message' => 'Error occured while creating account.', 'status' => false], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+
         try {
             /**Generate user accessToken **/
             $data['token'] =  $user->createToken('MyApp')->accessToken;
@@ -46,6 +54,16 @@ class RegistrationController extends Controller
         } catch (\Exception $e) {
             Log::error("Error occur while generating token for created account " . $request->input('email') . json_encode($e));
             return response()->json(['data' => null, 'message' => 'Error occured while while generating token for created account', 'status' => false], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function verifyToken()
+    {
+        $user = Auth::user();
+        if (!empty($user)) {
+            return response()->json(['data' => '', 'message' => 'The Token is valid', 'status' => true], Response::HTTP_OK);
+        } else {
+            return response()->json(['data' => null, 'message' => 'Invalid Token. Make sure you pass the token as header using Bearer Token', 'status' => false], Response::HTTP_FORBIDDEN);
         }
     }
 }
